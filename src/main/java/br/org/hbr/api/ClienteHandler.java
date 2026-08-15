@@ -23,34 +23,105 @@ public class ClienteHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        String metodo = exchange.getRequestMethod();
+        switch (metodo) {
+            case "GET":
+                listar(exchange);
+                break;
 
-        List<Cliente> clientes =
-                controller.listar();
+            case "POST":
+                inserir(exchange);
+                break;
 
-        Gson gson = new Gson();
+            case "PUT":
+                atualizar(exchange);
+                break;
 
-        String json =
-                gson.toJson(clientes);
+            case "DELETE":
+                excluir(exchange);
+                break;
 
-        exchange.getResponseHeaders()
-                .add("Content-Type",
-                        "application/json; charset=UTF-8");
+            default:
+                exchange.sendResponseHeaders(405, -1);
 
-        byte[] resposta =
-                json.getBytes(StandardCharsets.UTF_8);
-
-        exchange.sendResponseHeaders(
-                200,
-                resposta.length
-        );
-
-        OutputStream output =
-                exchange.getResponseBody();
-
-        output.write(resposta);
-
-        output.close();
+        }
 
     }
 
+    private void listar(HttpExchange exchange)
+            throws IOException {
+
+        HttpUtils.responder(
+                exchange,
+                200,
+                controller.listar()
+        );
+
+    }
+
+    private void inserir(HttpExchange exchange)
+            throws IOException {
+
+        Gson gson = new Gson();
+
+        Cliente cliente =
+                gson.fromJson(
+                        HttpUtils.lerBody(exchange),
+                        Cliente.class
+                );
+
+        controller.cadastrar(
+                cliente.getNome(),
+                cliente.getTelefone()
+        );
+
+        HttpUtils.responder(
+                exchange,
+                201,
+                cliente
+        );
+
+    }
+
+
+    private void atualizar(HttpExchange exchange)
+            throws IOException {
+
+        Gson gson = new Gson();
+
+        Cliente cliente =
+                gson.fromJson(
+                        HttpUtils.lerBody(exchange),
+                        Cliente.class
+                );
+
+        cliente.setCodigo(
+                HttpUtils.obterId(exchange)
+        );
+
+        controller.atualizar(cliente);
+
+        HttpUtils.responder(
+                exchange,
+                200,
+                cliente
+        );
+
+    }
+
+    private void excluir(HttpExchange exchange)
+            throws IOException {
+
+        int codigo =
+                HttpUtils.obterId(exchange);
+
+        controller.excluir(codigo);
+
+        HttpUtils.responder(
+                exchange,
+                200,
+                "Cliente excluído com sucesso."
+        );
+
+    }
 }

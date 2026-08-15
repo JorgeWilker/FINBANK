@@ -43,31 +43,6 @@ public class ClienteRepository {
         }
 
     }
-    public void atualizar(Cliente cliente) {
-        String sql = """
-            UPDATE cliente
-            SET    nome = ?,
-                   telefone = ?
-            WHERE id = ?
-            """;
-        try (
-                Connection connection = ConnectionFactory.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            statement.setString(1, cliente.getNome());
-            statement.setString(2, cliente.getTelefone());
-            statement.setInt(3, cliente.getCodigo());
-
-
-            statement.executeUpdate();
-
-            System.out.println("Cliente atualizado com sucesso!");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public void remover(Cliente cliente) {
         clientes.remove(cliente);
@@ -142,4 +117,33 @@ public class ClienteRepository {
 
         return null;
     }
+    public void atualizar(Cliente cliente) {
+
+        String sql = """
+            UPDATE cliente
+               SET nome = ?,
+                   telefone = ?
+             WHERE id = ?
+            """;
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cliente.getNome());
+            stmt.setString(2, cliente.getTelefone());
+            stmt.setInt(3, cliente.getCodigo());
+
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+
+            throw new RepositoryException(
+                    "Erro ao atualizar cliente.",
+                    e
+            );
+
+        }
+
+    }
+
 }

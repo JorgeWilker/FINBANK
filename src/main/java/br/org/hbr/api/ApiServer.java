@@ -20,6 +20,11 @@ public class ApiServer {
                 new ClienteHandler(controller)
         );
 
+        server.createContext(
+                "/clientes/",
+                new ClienteHandler(controller)
+        );
+
         System.out.println("Servidor iniciado na porta 8080.");
 
         server.start();

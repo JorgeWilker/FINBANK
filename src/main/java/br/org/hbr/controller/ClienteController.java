@@ -36,8 +36,16 @@ public class ClienteController {
     }
 
 
-    public void excluir(int id) {
-        repository.excluir(id);
+    public void excluir(int codigo) {
+
+        repository.excluir(codigo);
+
+    }
+
+    public void atualizar(Cliente cliente) {
+
+        repository.atualizar(cliente);
+
     }
 
 }
