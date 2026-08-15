@@ -6,6 +6,7 @@ build/
 **/src/main/resources
 src/main/resources
 .kotlin
+src/main/resources/config.properties
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
